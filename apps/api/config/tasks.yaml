@@ -1,0 +1,7 @@
+report_task:
+  description: >
+    Gere um parágrafo abrangente resumindo o seguinte tópico: {topic}.
+    Foque nas principais conquistas, ROI e próximos passos.
+  expected_output: >
+    Um único parágrafo detalhado adequado para um resumo executivo (em Português).
+  agent: report_agent
