@@ -51,3 +51,25 @@
   - [x] **UI**: Implement `PromptInputBox` (Glassmorphism, Voice, Upload).
   - [x] **Integration**: Connect Frontend to `POST /api/generate-report`.
   - [x] **Model**: Upgrade to **Llama 3.3 70B** (via Groq) for high fidelity.
+
+## 🔍 Sprint 5.2 Audit Report
+
+**Status da Arquitetura:** ⚠️ **Sanitizado** Foi identificada e removida
+redundância na definição dos agentes para alinhar com padrões CrewAI Modernos.
+
+### 1. Estrutura CrewAI (`apps/api/agents/`)
+
+- **Ação Tomada:** O arquivo `report_agent.py` (LEGADO) foi deletado.
+- **Fonte da Verdade:** `report_crew.py` é agora a definição oficial, usando
+  `@CrewBase` e `config/agents.yaml`.
+
+### 2. Integração Groq
+
+- **Status:** ✅ **Aprovado**
+- Uso correto da classe `LLM` do CrewAI apontando para
+  `groq/llama-3.3-70b-versatile`.
+
+### 3. Conexão Frontend-Backend
+
+- **Status:** ✅ **Aprovado**
+- Payload `{ topic: string }` validado e consistente entre Client e Server.

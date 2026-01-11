@@ -3,8 +3,10 @@ uvicorn
 python-dotenv
 supabase
 crewai
+crewai-tools
 langchain
-langchain-groq
+# langchain-groq
+langchain-google-genai
 langchain-openai
 pydantic
 openai

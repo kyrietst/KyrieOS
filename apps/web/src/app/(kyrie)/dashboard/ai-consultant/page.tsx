@@ -59,7 +59,7 @@ export default function AIConsultantPage() {
         </div>
         <div>
           <h1 className="text-lg font-semibold tracking-tight">Consultor IA</h1>
-          <p className="text-xs text-gray-400">Analista Sênior • Llama 3 70B</p>
+          <p className="text-xs text-gray-400">Analista Sênior • Gemini 1.5 Flash</p>
         </div>
       </header>
 

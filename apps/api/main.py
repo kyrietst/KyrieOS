@@ -59,7 +59,9 @@ class ReportRequest(BaseModel):
 
 @app.post("/api/generate-report")
 def generate_report(request: ReportRequest):
+    print(f"🚀 [DEBUG] Iniciando geração do relatório para: {request.topic}")
     try:
+        print("🚀 [DEBUG] Importando ReportCrew...")
         from agents.report_crew import ReportCrew
         
         # Inputs for the variables in YAML ({topic})
@@ -67,11 +69,17 @@ def generate_report(request: ReportRequest):
             'topic': request.topic
         }
         
-        # Kickoff the crew
-        print(f"🚀 Iniciando geração do relatório para o tópico: {request.topic}")
-        crew = ReportCrew().crew()
+        print("🚀 [DEBUG] Instanciando ReportCrew()...")
+        crew_instance = ReportCrew()
+        
+        print("🚀 [DEBUG] Criando crew object (.crew())...")
+        crew = crew_instance.crew()
+        
+        print("🚀 [DEBUG] Executando kickoff()... (Isso pode demorar)")
         result = crew.kickoff(inputs=inputs)
-        print(f"✅ Geração concluída com sucesso! Resultado: {str(result)[:100]}...")
+        
+        print(f"✅ [DEBUG] Kickoff concluído! Tipo retorno: {type(result)}")
+        print(f"✅ [DEBUG] Resultado parcial: {str(result)[:100]}...")
         final_report = str(result)
         
         # PERSISTENCE: Save to Supabase
@@ -84,6 +92,10 @@ def generate_report(request: ReportRequest):
         return {"report": final_report}
     except Exception as e:
         import traceback
+        if "429" in str(e):
+             print("\n⚠️  ERRO DE COTA (429): O modelo atual atingiu o limite gratuito.")
+             print("👉 SUGESTÃO: Aguarde 1 minuto ou troque a chave de API.\n")
+        
         print("❌ Error generating report:")
         traceback.print_exc()
         return {"status": "error", "message": str(e)}

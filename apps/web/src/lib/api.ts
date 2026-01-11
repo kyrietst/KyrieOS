@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
 
 interface ApiResponse<T = any> {
   data?: T
@@ -8,6 +8,7 @@ interface ApiResponse<T = any> {
 
 export const api = {
   get: async <T>(endpoint: string): Promise<T> => {
+    console.log(`[API Debug] GET request to: ${API_URL}${endpoint}`);
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 120000); // 120s timeout
 
@@ -33,6 +34,7 @@ export const api = {
   },
 
   post: async <T>(endpoint: string, body: any): Promise<T> => {
+    console.log(`[API Debug] POST request to: ${API_URL}${endpoint}`);
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 120000); // 120s timeout
 

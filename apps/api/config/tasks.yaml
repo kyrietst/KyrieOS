@@ -1,7 +1,9 @@
-report_task:
+generate_report_task:
   description: >
-    Gere um parágrafo abrangente resumindo o seguinte tópico: {topic}.
-    Foque nas principais conquistas, ROI e próximos passos.
+    O usuário solicitou: "{topic}".
+    1. Use a SupabaseSearchTool para buscar dados relevantes (Projetos/Tarefas) relacionados ao pedido.
+    2. Analise os dados retornados.
+    3. Escreva um relatório respondendo à solicitação do usuário com base nos fatos.
   expected_output: >
-    Um único parágrafo detalhado adequado para um resumo executivo (em Português).
-  agent: report_agent
+    Um relatório formatado em Markdown, profissional e direto ao ponto.
+  agent: reporting_analyst

@@ -1,15 +1,15 @@
-from crewai_tools import BaseTool
+from crewai.tools import BaseTool
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class ProjectQueueTool(BaseTool):
-    name: str = "Get Project Queue"
-    description: str = "Fetches the list of active projects and their details. Use this to understand what remains to be done."
+class SupabaseSearchTool(BaseTool):
+    name: str = "Supabase Search Tool"
+    description: str = "Search for projects and tasks in the database. Useful to get real data about the user's workload. Input should be a search query string or 'all' to list everything."
 
-    def _run(self) -> str:
+    def _run(self, query: str) -> str:
         # Force reload env vars to be sure
         load_dotenv()
         try:
@@ -22,18 +22,22 @@ class ProjectQueueTool(BaseTool):
 
             supabase: Client = create_client(url, key)
             
-            print(f"🔍 AI Tool Access: Fetching active projects...")
+            print(f"\n🔍 [TOOL DEBUG] SupabaseSearchTool acionada com query: '{query}'")
             
-            # Fetch active projects - checking specific fields for efficiency
-            response = supabase.table("projects").select("id, name, status, deadline").eq("status", "active").execute()
+            # If query is generic, fetch active projects
+            if query.lower() in ['all', 'tudo', 'todos', 'lista', 'projetos', 'active']:
+                response = supabase.table("projects").select("id, name, status, deadline").eq("status", "active").execute()
+            else:
+                # Search by name similarity
+                response = supabase.table("projects").select("id, name, status, deadline").ilike("name", f"%{query}%").execute()
             
             if not response.data:
-                print("🔍 AI Tool Access: No active projects found.")
-                return "No active projects found."
+                print("🔍 AI Tool Access: No projects found.")
+                return "No projects found matching your criteria."
             
             count = len(response.data)
-            print(f"🔍 AI Tool Access: Found {count} active projects.")
+            print(f"✅ [TOOL DEBUG] Sucesso. Encontrados {count} resultados.")
                 
-            return f"Active Projects: {str(response.data)}"
+            return f"Found Projects: {str(response.data)}"
         except Exception as e:
-            return f"Error fetching projects: {str(e)}"
+            return f"Error searching projects: {str(e)}"

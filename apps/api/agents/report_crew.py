@@ -1,5 +1,6 @@
-from crewai import Agent, Crew, Process, Task, LLM
+from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 from dotenv import load_dotenv
 
@@ -12,30 +13,33 @@ class ReportCrew:
     tasks_config = '../config/tasks.yaml'
 
     def __init__(self):
-        # Llama 3.3 70B (Groq) - High Intelligence
-        self.llama_llm = LLM(
-            model="groq/llama-3.3-70b-versatile",
-            api_key=os.getenv("GROQ_API_KEY")
+        # Hack: Bypass CrewAI's OpenAI validation if key is missing
+        if "OPENAI_API_KEY" not in os.environ:
+             os.environ["OPENAI_API_KEY"] = "NA"
+
+        # Gemini 1.5 Flash (Stable Free Tier)
+        self.gemini_llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",
+            verbose=True,
+            temperature=0.5,
+            google_api_key=os.getenv("GOOGLE_API_KEY")
         )
 
-        # Kimi (Groq) - Future Use
-        # self.kimi_llm = LLM(model="groq/moonshotai/kimi-k2-instruct-0905", api_key=os.getenv("GROQ_API_KEY"))
-
     @agent
-    def report_agent(self) -> Agent:
-        from tools.supabase_search_tool import ProjectQueueTool
+    def reporting_analyst(self) -> Agent:
+        from tools.supabase_search_tool import SupabaseSearchTool
         
         return Agent(
-            config=self.agents_config['report_agent'],
+            config=self.agents_config['reporting_analyst'],
             verbose=True,
-            llm=self.llama_llm,
-            tools=[ProjectQueueTool()]
+            llm=self.gemini_llm,
+            tools=[SupabaseSearchTool()]
         )
 
     @task
-    def report_task(self) -> Task:
+    def generate_report_task(self) -> Task:
         return Task(
-            config=self.tasks_config['report_task'],
+            config=self.tasks_config['generate_report_task'],
         )
 
     @crew
